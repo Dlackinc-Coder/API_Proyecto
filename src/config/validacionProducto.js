@@ -18,7 +18,7 @@ export const validarProducto = [
     .withMessage("La variedad del producto es obligatoria")
     .isLength({ max: 50 })
     .withMessage("La variedad del producto no debe exceder los 50 caracteres"),
-
+    
   body("precio")
     .notEmpty()
     .withMessage("El precio del producto es obligatorio")
@@ -28,9 +28,7 @@ export const validarProducto = [
   body("descripcion")
     .optional()
     .isLength({ max: 500 })
-    .withMessage(
-      "La descripción del producto no debe exceder los 500 caracteres"
-    ),
+    .withMessage("La descripción del producto no debe exceder los 500 caracteres"),
 
   body("imagen_url")
     .optional()
