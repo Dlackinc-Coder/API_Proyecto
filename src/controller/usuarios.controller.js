@@ -1,4 +1,4 @@
-import Usuarios from "../models/usuarios";
+import Usuarios from "../models/usuarios.js";
 
 class UsuariosController {
   static async crearUsuario(req, res) {

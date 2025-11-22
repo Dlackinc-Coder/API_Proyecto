@@ -1,4 +1,4 @@
-import pool from "../db.js";
+import pool from "../config/db.js";
 class Usuarios {
   static async CrearUsuario(id_rol, nombre, email, contrasena, telefono) {
     const result = await pool.query(

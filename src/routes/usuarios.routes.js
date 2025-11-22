@@ -1,6 +1,6 @@
 import { Router } from "express";
-import UsuarioController from "../controller/usuario.controller.js";
-import { validarUsuario } from "../config/validacionUsuario.js";
+import UsuariosController from "../controller/usuarios.controller.js";
+import validarUsuario from "../config/validacionUsuarios.js";
 import validacionLimitOffset from "../config/validacionLimit-Offset.js";
 import { validationResult } from "express-validator";
 
@@ -21,7 +21,7 @@ routerUsuario.post(
   validarUsuario,
   validadorErrores,
   (req, res) => {
-    UsuarioController.crearUsuario(req, res);
+    UsuariosController.crearUsuario(req, res);
   }
 );
 
@@ -30,12 +30,12 @@ routerUsuario.get(
   validacionLimitOffset,
   validadorErrores,
   (req, res) => {
-    UsuarioController.obtenerUsuarios(req, res);
+    UsuariosController.obtenerTodosLosUsuarios(req, res);
   }
 );
 
 routerUsuario.get("/api/usuarios/:id", (req, res) => {
-  UsuarioController.obtenerUsuarioPorId(req, res);
+  UsuariosController.obtenerUsuarioPorId(req, res);
 });
 
 routerUsuario.put(
@@ -43,12 +43,12 @@ routerUsuario.put(
   validarUsuario,
   validadorErrores,
   (req, res) => {
-    UsuarioController.actualizarUsuario(req, res);
+    UsuariosController.actualizarUsuario(req, res);
   }
 );
 
 routerUsuario.delete("/api/usuarios/:id", (req, res) => {
-  UsuarioController.eliminarUsuario(req, res);
+  UsuariosController.eliminarUsuario(req, res);
 });
 
 export default routerUsuario;
