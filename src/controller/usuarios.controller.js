@@ -1,16 +1,22 @@
 import Usuarios from "../models/usuarios.js";
-
+import bcrypt from "bcrypt";
 class UsuariosController {
   static async crearUsuario(req, res) {
     const { id_rol, nombre, email, contrasena, telefono } = req.body;
     try {
+      // CIFRADO DE CONTRASEÑA
+      const saltRounds = 10;
+      const hashContrasena = await bcrypt.hash(contrasena, saltRounds);
+
       const nuevoUsuario = await Usuarios.CrearUsuario(
         id_rol,
         nombre,
         email,
-        contrasena,
+        hashContrasena, // Guardamos el Hash, no el texto plano
         telefono
       );
+      delete nuevoUsuario.contrasena;
+
       res.status(201).json(nuevoUsuario);
     } catch (error) {
       res.status(500).json({ error: "Error al crear el usuario" });
@@ -19,12 +25,12 @@ class UsuariosController {
 
   static async obtenerTodosLosUsuarios(req, res) {
     try {
-      const usuarios = await Usuarios.ObtenerTodosLosUsuarios();
+      const usuarios = await Usuarios.ObtenerTodosLosUsuarios(); 
       res.status(200).json(usuarios);
     } catch (error) {
       res.status(500).json({ error: "Error al obtener los usuarios" });
     }
-  }
+}
 
   static async obtenerUsuarioPorId(req, res) {
     const { id } = req.params;

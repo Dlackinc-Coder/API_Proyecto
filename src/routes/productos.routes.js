@@ -2,38 +2,61 @@ import { Router } from "express";
 import ProductoController from "../controller/producto.controller.js";
 import { validarProducto } from "../config/validacionProducto.js";
 import validacionLimitOffset from "../config/validacionLimit-Offset.js";
-import { validationResult } from "express-validator";
+import validarErrores from "../config/validarErrores.js";
+import { uploadImageMiddleware } from "../config/multer.js";
+import { verificarToken, verificarRol } from "../config/autenticacion.js"; 
 
 const routerProducto = Router();
-function validadorErrores(req, res, next) {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
-    return res.status(400).json({
-      mesange: "Error en la validacio",
-      error: error.array(),
-    });
-  }
-  next();
-}
+const ROL_ADMIN = 1;
 
-routerProducto.post("/api/productos", validarProducto, validadorErrores,(req, res)=>{
-    ProductoController.crearProducto(req, res);
-});
+// ==== RUTAS DEL CATÁLOGO (Requieren Solo Autenticación/Login) ====
 
-routerProducto.get("/api/productos", validacionLimitOffset, validadorErrores,(req, res)=>{
-    ProductoController.obtenerProductos(req, res);
-});
+// 1. GET: Obtener todos los productos (Catálogo - Requiere token)
+routerProducto.get(
+  "/api/productos",
+  verificarToken,
+  validacionLimitOffset,
+  validarErrores,
+  ProductoController.obtenerProductos
+);
 
-routerProducto.get("/api/productos/:id", (req, res)=>{
-    ProductoController.obtenerProductoPorId(req, res);
-});
+// 2. GET: Obtener producto por ID (Detalle - Requiere token)
+routerProducto.get(
+  "/api/productos/:id",
+  verificarToken,
+  ProductoController.obtenerProductoPorId
+);
 
-routerProducto.put("/api/productos/:id", validarProducto, validadorErrores,(req, res)=>{
-    ProductoController.actualizarProducto(req, res);
-});
 
-routerProducto.delete("/api/productos/:id", (req, res)=>{
-    ProductoController.eliminarProducto(req, res);
-});
+// ==== RUTAS DE ADMINISTRACIÓN (Requieren Autenticación y Autorización) ====
 
-export default routerProducto;  
+// 3. POST: Crear producto (Solo Admin)
+routerProducto.post(
+  "/api/productos",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
+  uploadImageMiddleware,
+  validarProducto,
+  validarErrores,
+  ProductoController.crearProducto
+);
+
+// 4. PUT: Actualizar producto (Solo Admin)
+routerProducto.put(
+  "/api/productos/:id",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
+  validarProducto,
+  validarErrores,
+  ProductoController.actualizarProducto
+);
+
+// 5. DELETE: Eliminar producto (Solo Admin)
+routerProducto.delete(
+  "/api/productos/:id",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
+  ProductoController.eliminarProducto
+);
+
+export default routerProducto;

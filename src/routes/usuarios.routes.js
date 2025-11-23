@@ -2,53 +2,48 @@ import { Router } from "express";
 import UsuariosController from "../controller/usuarios.controller.js";
 import validarUsuario from "../config/validacionUsuarios.js";
 import validacionLimitOffset from "../config/validacionLimit-Offset.js";
-import { validationResult } from "express-validator";
-
+import validarErrores from "../config/validarErrores.js";
+import { verificarToken, verificarRol } from "../config/autenticacion.js";
 const routerUsuario = Router();
-function validadorErrores(req, res, next) {
-  const error = validationResult(req);
-  if (!error.isEmpty()) {
-    return res.status(400).json({
-      mesange: "Error en la validacio",
-      error: error.array(),
-    });
-  }
-  next();
-}
+const ROL_ADMIN = 1;
 
 routerUsuario.post(
   "/api/usuarios",
   validarUsuario,
-  validadorErrores,
-  (req, res) => {
-    UsuariosController.crearUsuario(req, res);
-  }
+  validarErrores,
+  UsuariosController.crearUsuario
 );
 
 routerUsuario.get(
   "/api/usuarios",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
   validacionLimitOffset,
-  validadorErrores,
-  (req, res) => {
-    UsuariosController.obtenerTodosLosUsuarios(req, res);
-  }
+  validarErrores,
+  UsuariosController.obtenerTodosLosUsuarios
 );
 
-routerUsuario.get("/api/usuarios/:id", (req, res) => {
-  UsuariosController.obtenerUsuarioPorId(req, res);
-});
+routerUsuario.get(
+  "/api/usuarios/:id",
+  verificarToken,
+  UsuariosController.obtenerUsuarioPorId
+);
 
 routerUsuario.put(
   "/api/usuarios/:id",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
   validarUsuario,
-  validadorErrores,
-  (req, res) => {
-    UsuariosController.actualizarUsuario(req, res);
-  }
+  validarErrores,
+  UsuariosController.actualizarUsuario
 );
 
-routerUsuario.delete("/api/usuarios/:id", (req, res) => {
-  UsuariosController.eliminarUsuario(req, res);
-});
+routerUsuario.delete(
+  "/api/usuarios/:id",
+  verificarToken,
+  verificarRol([ROL_ADMIN]),
+  UsuariosController.eliminarUsuario
+);
+
 
 export default routerUsuario;

@@ -10,7 +10,7 @@ class Productos {
     imagen_url
   ) {
     const result = await pool.query(
-      "INSERT INTO productos (nombre, tipo, variedad, precio, descripcion, imagen_url,) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      "INSERT INTO productos (nombre, tipo, variedad, precio, descripcion, imagen_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
       [nombre, tipo, variedad, precio, descripcion, imagen_url]
     );
     return result.rows[0];
