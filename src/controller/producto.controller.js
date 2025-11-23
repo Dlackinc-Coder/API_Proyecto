@@ -3,7 +3,6 @@ import cloudinary from "../config/cloudinary.js";
 
 function getPublicIdFromUrl(url) {
   if (!url) return null;
-  // Ejemplo: https://res.cloudinary.com/.../v123456/folder/public_id_example.jpg
   // Extrae 'folder/public_id_example'
   const match = url.match(/\/v\d+\/(.+)\.\w+$/);
   if (match && match[1]) {

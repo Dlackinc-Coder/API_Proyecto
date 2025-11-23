@@ -1,9 +1,9 @@
-import pool from "../config/db.js"; 
+import pool from "../config/db.js";
 
 class DetallesPedido {
-  static async crearDetalle(detalle) {
+  static async crearDetalle(client, detalle) {
     const { id_pedido, id_producto, cantidad, precio_unitario } = detalle;
-    const result = await pool.query(
+    const result = await client.query(
       "INSERT INTO detalles_pedido (id_pedido, id_producto, cantidad, precio_unitario) VALUES ($1, $2, $3, $4) RETURNING *",
       [id_pedido, id_producto, cantidad, precio_unitario]
     );

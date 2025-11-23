@@ -15,7 +15,7 @@ class Documentos {
     );
     return result.rows[0];
   }
-  
+
   static async obtenerDocumentoPorId(id_documento) {
     const result = await pool.query(
       "SELECT * FROM documentos_personal WHERE id_documento = $1",
@@ -62,7 +62,6 @@ class Documentos {
     return result.rows;
   }
 
-  // ============== NUEVA FUNCIÓN DE ALERTA (RNF-006) ==============
   static async obtenerDocumentosPorVencer() {
     const result = await pool.query(
       `SELECT dp.*, u.nombre AS nombre_empleado 
@@ -75,7 +74,6 @@ class Documentos {
     return result.rows;
   }
 
-  // FUNCIÓN PARA ACTUALIZAR ESTADO (Prueba 3)
   static async actualizarEstadoDocumento(id_documento, nuevo_estado) {
     const result = await pool.query(
       "UPDATE documentos_personal SET estado = $1 WHERE id_documento = $2 RETURNING *",

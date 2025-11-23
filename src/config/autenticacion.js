@@ -7,7 +7,6 @@ export const verificarToken = (req, res, next) => {
 
   // Verificar que el encabezado existe (Bearer <token>)
   if (!authHeader) {
-    // Error 401: No Autorizado (Falta el token)
     return res
       .status(401)
       .json({
@@ -27,7 +26,7 @@ export const verificarToken = (req, res, next) => {
 
   try {
     // 2. Verificar y decodificar el token usando la clave secreta
-    const secret = process.env.JWT_SECRET || "mi_clave_secreta_super_segura"; // ⚠️ Usa la misma clave secreta de tu .env
+    const secret = process.env.JWT_SECRET || "6c8e47759d738ef97bb64b724e1c82d705ca39d2629f514ae1436da18bbf162e";
 
     // jwt.verify() lanza un error si el token es inválido o ha expirado
     const decoded = jwt.verify(token, secret);

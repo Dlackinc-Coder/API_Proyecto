@@ -1,8 +1,8 @@
 import pool from "../config/db.js";
 
 class Pedidos {
-  static async CrearPedido(id_cliente, estado, metodo_pago, total) {
-    const result = await pool.query(
+  static async CrearPedido(client, id_cliente, estado, metodo_pago, total) {
+    const result = await client.query(
       "INSERT INTO pedidos (id_cliente, estado, metodo_pago, total) VALUES ($1, $2, $3, $4) RETURNING *",
       [id_cliente, estado, metodo_pago, total]
     );

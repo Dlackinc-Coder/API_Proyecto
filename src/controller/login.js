@@ -1,5 +1,5 @@
 import Usuarios from "../models/usuarios.js";
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 class AuthController {
@@ -7,7 +7,6 @@ class AuthController {
     const { email, contrasena } = req.body;
 
     try {
-      
       const usuario = await Usuarios.ObtenerUsuarioPorEmail(email);
 
       // 2. Verificar si el usuario existe y si su cuenta no está eliminada
@@ -34,23 +33,22 @@ class AuthController {
       };
 
       // Leemos la clave secreta desde las variables de entorno
-      const secret = process.env.JWT_SECRET || '.env'; // ⚠️ CAMBIA ESTO EN .env
+      const secret = process.env.JWT_SECRET;
 
       const token = jwt.sign(
         payload,
         secret,
         { expiresIn: "1h" } // El token expira en 1 hora
       );
-      
+
       // 5. Devolver el token (y datos básicos del usuario) al cliente
       const { contrasena: _, ...usuarioSinContrasena } = usuario; // Desestructuración para omitir la contraseña
 
-      res.status(200).json({ 
-          message: "Inicio de sesión exitoso",
-          token, 
-          usuario: usuarioSinContrasena 
+      res.status(200).json({
+        message: "Inicio de sesión exitoso",
+        token,
+        usuario: usuarioSinContrasena,
       });
-
     } catch (error) {
       console.error("Error en el login:", error);
       res.status(500).json({ error: "Error interno del servidor" });

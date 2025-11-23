@@ -5,42 +5,83 @@ class PedidosController {
   static async crearPedido(req, res) {
     const { id_cliente, estado, metodo_pago, total, productos } = req.body;
 
+    // 1. Obtener un cliente de conexión
+    const client = await pool.connect();
+    let nuevoPedido = null;
+    let detallesGuardados = [];
+
     try {
-      const nuevoPedido = await Pedidos.CrearPedido(
+      // 2. INICIAR LA TRANSACCIÓN
+      await client.query("BEGIN");
+
+      // 3. Crear el Pedido principal
+      nuevoPedido = await Pedidos.CrearPedido(
+        client,
         id_cliente,
         estado,
         metodo_pago,
         total
       );
       const id_pedido = nuevoPedido.id_pedido;
-      const detallesGuardados = [];
+
       if (productos && productos.length > 0) {
         for (const prod of productos) {
-          await DetallesPedido.crearDetalle({
+          // 4. CREAR DETALLE DE PEDIDO (USANDO EL CLIENTE)
+          const detalle = await DetallesPedido.crearDetalle(client, {
             id_pedido: id_pedido,
             id_producto: prod.id_producto,
             cantidad: prod.cantidad,
             precio_unitario: prod.precio_unitario,
           });
-          // Opcional: Aquí podrías restar stock del inventario
+          detallesGuardados.push(detalle);
+
+          // 5. RESTAR STOCK (USANDO EL CLIENTE)
+          const stockActualizado = await Inventario.RestarStockPorProducto(
+            client, // ⬅️ PASAMOS EL CLIENTE
+            prod.id_producto,
+            prod.cantidad
+          );
+
+          // 6. VERIFICAR STOCK SUFICIENTE
+          if (!stockActualizado) {
+            // Lanzar un error para que el bloque CATCH ejecute el ROLLBACK
+            throw new Error(
+              `Stock insuficiente para el producto ID ${prod.id_producto}.`
+            );
+          }
         }
-        // C. Recuperar los detalles recién creados para confirmar al cliente
-        const detalles = await DetallesPedido.obtenerPorPedido(id_pedido);
-        detallesGuardados.push(...detalles);
       }
 
+      // 7. SI TODO FUE EXITOSO, CONFIRMAR LA TRANSACCIÓN
+      await client.query("COMMIT");
+
       res.status(201).json({
-        mensaje: "Pedido creado exitosamente",
+        mensaje: "Pedido creado y stock restado exitosamente.",
         pedido: nuevoPedido,
         detalles: detallesGuardados,
       });
     } catch (error) {
+      // 8. SI HAY CUALQUIER ERROR (stock insuficiente, o error de DB), DESHACER TODO
+      await client.query("ROLLBACK");
+
       console.error(error);
-      res.status(500).json({ error: "Error al procesar el pedido." });
+
+      // Manejar el error específico de stock insuficiente
+      if (error.message.includes("Stock insuficiente")) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      res.status(500).json({
+        error: "Error al procesar el pedido. Se ha deshecho la operación.",
+      });
+    } finally {
+      // 9. LIBERAR EL CLIENTE DE CONEXIÓN
+      if (client) {
+        client.release();
+      }
     }
   }
 
-  // 2. Obtener Todos los Pedidos (Solo cabeceras para listas rápidas)
   static async obtenerTodosLosPedidos(req, res) {
     try {
       const pedidos = await Pedidos.ObtenerPedidos();
@@ -50,31 +91,36 @@ class PedidosController {
     }
   }
 
-  // 3. Obtener Pedido por ID (CON SUS DETALLES) -> Aquí absorbemos la lógica vieja
   static async obtenerPedidoPorId(req, res) {
     const { id } = req.params;
+
+    // Obtener los datos del usuario logueado desde el token (req.usuario)
+    const { id_usuario, id_rol } = req.usuario;
+
     try {
-      // A. Buscamos la cabecera
       const pedido = await Pedidos.ObtenerPedidoPorId(id);
 
-      if (pedido) {
-        // B. Buscamos los productos de este pedido (Usando el modelo DetallesPedido)
-        const productos = await DetallesPedido.obtenerPorPedido(id);
+      if (!pedido) {
+        return res.status(404).json({ error: "Pedido no encontrado" });
+      }
+      const esAdministrador = id_rol === 1;
+      const esPropietario = pedido.id_cliente === id_usuario;
 
-        // C. Respondemos con el objeto completo unificado
-        res.status(200).json({
-          ...pedido, // Datos del cliente, fecha, total
-          productos, // Array con los cafés comprados
-        });
+      if (esAdministrador || esPropietario) {
+        // El administrador puede ver cualquier pedido
+        // El cliente solo puede ver su propio pedido
+        res.status(200).json(pedido);
       } else {
-        res.status(404).json({ error: "Pedido no encontrado" });
+        // Un cliente intenta ver el pedido de otra persona
+        res
+          .status(403)
+          .json({ error: "Acceso denegado. Este pedido no es suyo." });
       }
     } catch (error) {
       res.status(500).json({ error: "Error al obtener el pedido" });
     }
   }
 
-  // ... (Mantén tus métodos ActualizarEstado y EliminarPedido igual que antes)
   static async ActualizarEstado(req, res) {
     const { id } = req.params;
     const { estado } = req.body;

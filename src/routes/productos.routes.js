@@ -9,9 +9,6 @@ import { verificarToken, verificarRol } from "../config/autenticacion.js";
 const routerProducto = Router();
 const ROL_ADMIN = 1;
 
-// ==== RUTAS DEL CATÁLOGO (Requieren Solo Autenticación/Login) ====
-
-// 1. GET: Obtener todos los productos (Catálogo - Requiere token)
 routerProducto.get(
   "/api/productos",
   verificarToken,
@@ -20,17 +17,12 @@ routerProducto.get(
   ProductoController.obtenerProductos
 );
 
-// 2. GET: Obtener producto por ID (Detalle - Requiere token)
 routerProducto.get(
   "/api/productos/:id",
   verificarToken,
   ProductoController.obtenerProductoPorId
 );
 
-
-// ==== RUTAS DE ADMINISTRACIÓN (Requieren Autenticación y Autorización) ====
-
-// 3. POST: Crear producto (Solo Admin)
 routerProducto.post(
   "/api/productos",
   verificarToken,
@@ -41,7 +33,6 @@ routerProducto.post(
   ProductoController.crearProducto
 );
 
-// 4. PUT: Actualizar producto (Solo Admin)
 routerProducto.put(
   "/api/productos/:id",
   verificarToken,
@@ -51,7 +42,6 @@ routerProducto.put(
   ProductoController.actualizarProducto
 );
 
-// 5. DELETE: Eliminar producto (Solo Admin)
 routerProducto.delete(
   "/api/productos/:id",
   verificarToken,

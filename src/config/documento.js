@@ -1,6 +1,5 @@
 import { body } from "express-validator";
 
-// Cambio a export const para consistencia con los otros archivos
 export const validarDocumento = [
   body("tipo_documento")
     .notEmpty()
@@ -22,7 +21,7 @@ export const validarDocumento = [
     .withMessage("ID de empleado inválido"),
 
   body("fecha_vencimiento")
-    .optional({ nullable: true, checkFalsy: true }) // Permite que no exista o que sea nulo/vacío
+    .optional({ nullable: true, checkFalsy: true })
     .isISO8601()
     .withMessage(
       "La fecha de vencimiento debe ser una fecha válida (YYYY-MM-DD)"
