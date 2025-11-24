@@ -7,11 +7,9 @@ export const verificarToken = (req, res, next) => {
 
   // Verificar que el encabezado existe (Bearer <token>)
   if (!authHeader) {
-    return res
-      .status(401)
-      .json({
-        error: "Acceso denegado. Se requiere un token de autenticación.",
-      });
+    return res.status(401).json({
+      error: "Acceso denegado. Se requiere un token de autenticación.",
+    });
   }
 
   // Separar el esquema 'Bearer ' del token
@@ -26,7 +24,11 @@ export const verificarToken = (req, res, next) => {
 
   try {
     // 2. Verificar y decodificar el token usando la clave secreta
-    const secret = process.env.JWT_SECRET || "6c8e47759d738ef97bb64b724e1c82d705ca39d2629f514ae1436da18bbf162e";
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      throw new Error("JWT_SECRET no está configurado en variables de entorno");
+    }
 
     // jwt.verify() lanza un error si el token es inválido o ha expirado
     const decoded = jwt.verify(token, secret);
@@ -48,25 +50,21 @@ export const verificarRol = (rolesPermitidos) => {
   return (req, res, next) => {
     // Asume que 'verificarToken' ya se ejecutó y adjuntó el usuario
     if (!req.usuario) {
-      return res
-        .status(403)
-        .json({
-          error: "Acceso denegado. Información de usuario no disponible.",
-        });
+      return res.status(403).json({
+        error: "Acceso denegado. Información de usuario no disponible.",
+      });
     }
 
     const userRole = req.usuario.id_rol;
 
     // Comprueba si el id_rol del usuario está en la lista de roles permitidos
     if (rolesPermitidos.includes(userRole)) {
-      next(); // El usuario tiene el rol requerido
+      next(); 
     } else {
-      return res
-        .status(403)
-        .json({
-          error:
-            "Permiso insuficiente. No tiene el rol necesario para esta acción.",
-        });
+      return res.status(403).json({
+        error:
+          "Permiso insuficiente. No tiene el rol necesario para esta acción.",
+      });
     }
   };
 };

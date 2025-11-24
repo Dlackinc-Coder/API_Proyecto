@@ -4,7 +4,7 @@ import { validarProducto } from "../config/validacionProducto.js";
 import validacionLimitOffset from "../config/validacionLimit-Offset.js";
 import validarErrores from "../config/validarErrores.js";
 import { uploadImageMiddleware } from "../config/multer.js";
-import { verificarToken, verificarRol } from "../config/autenticacion.js"; 
+import { verificarToken, verificarRol } from "../config/autenticacion.js";
 
 const routerProducto = Router();
 const ROL_ADMIN = 1;
@@ -37,6 +37,7 @@ routerProducto.put(
   "/api/productos/:id",
   verificarToken,
   verificarRol([ROL_ADMIN]),
+  uploadImageMiddleware,
   validarProducto,
   validarErrores,
   ProductoController.actualizarProducto

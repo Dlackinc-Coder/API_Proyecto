@@ -1,4 +1,5 @@
 import Inventario from "../models/inventario.js";
+
 class InventarioController {
   static async crearInventario(req, res) {
     try {
@@ -20,7 +21,7 @@ class InventarioController {
     } catch (error) {
       res.status(500).json({ error: "Error al obtener el inventario" });
     }
-}
+  }
 
   static async actualizarStock(req, res) {
     try {
@@ -33,4 +34,5 @@ class InventarioController {
     }
   }
 }
+
 export default InventarioController;

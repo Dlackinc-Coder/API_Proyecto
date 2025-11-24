@@ -33,7 +33,13 @@ class AuthController {
       };
 
       // Leemos la clave secreta desde las variables de entorno
-      const secret = process.env.JWT_SECRET || "6c8e47759d738ef97bb64b724e1c82d705ca39d2629f514ae1436da18bbf162e";
+      const secret = process.env.JWT_SECRET;
+
+      if (!secret) {
+        throw new Error(
+          "JWT_SECRET no está configurado en variables de entorno"
+        );
+      }
 
       const token = jwt.sign(
         payload,

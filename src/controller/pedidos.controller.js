@@ -1,5 +1,7 @@
 import Pedidos from "../models/pedidos.js";
 import DetallesPedido from "../models/detalles_pedido.js";
+import Inventario from "../models/inventario.js";
+import pool from "../config/db.js";
 
 class PedidosController {
   static async crearPedido(req, res) {

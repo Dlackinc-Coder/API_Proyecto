@@ -1,5 +1,6 @@
 import Usuarios from "../models/usuarios.js";
 import bcrypt from "bcrypt";
+
 class UsuariosController {
   static async crearUsuario(req, res) {
     const { id_rol, nombre, email, contrasena, telefono } = req.body;
@@ -25,18 +26,25 @@ class UsuariosController {
 
   static async obtenerTodosLosUsuarios(req, res) {
     try {
-      const usuarios = await Usuarios.ObtenerTodosLosUsuarios(); 
+      let usuarios = await Usuarios.ObtenerTodosLosUsuarios();
+      // Remover contraseñas antes de devolver
+      usuarios = usuarios.map((u) => {
+        delete u.contrasena;
+        return u;
+      });
       res.status(200).json(usuarios);
     } catch (error) {
       res.status(500).json({ error: "Error al obtener los usuarios" });
     }
-}
+  }
 
   static async obtenerUsuarioPorId(req, res) {
     const { id } = req.params;
     try {
       const usuario = await Usuarios.ObtenerUsuarioPorId(id);
       if (usuario) {
+        // Remover contraseña antes de devolver
+        delete usuario.contrasena;
         res.status(200).json(usuario);
       } else {
         res.status(404).json({ error: "Usuario no encontrado" });
@@ -48,15 +56,25 @@ class UsuariosController {
 
   static async actualizarUsuario(req, res) {
     const { id } = req.params;
-    const { nombre, email, contrasena, telefono } = req.body;
+    let { nombre, email, contrasena, telefono } = req.body;
     try {
+      // Si se proporciona contraseña, hashearla; si no, pasar null
+      let hashContrasena = null;
+      if (contrasena) {
+        const saltRounds = 10;
+        hashContrasena = await bcrypt.hash(contrasena, saltRounds);
+      }
+
       const usuarioActualizado = await Usuarios.ActualizarUsuario(
         id,
         nombre,
         email,
-        contrasena,
+        hashContrasena,
         telefono
       );
+      
+      // Remover contraseña antes de devolver
+      delete usuarioActualizado.contrasena;
       res.status(200).json(usuarioActualizado);
     } catch (error) {
       res.status(500).json({ error: "Error al actualizar el usuario" });
@@ -67,10 +85,13 @@ class UsuariosController {
     const { id } = req.params;
     try {
       const usuarioEliminado = await Usuarios.EliminarUsuario(id);
+      // Remover contraseña antes de devolver
+      delete usuarioEliminado.contrasena;
       res.status(200).json(usuarioEliminado);
     } catch (error) {
       res.status(500).json({ error: "Error al eliminar el usuario" });
     }
   }
 }
+
 export default UsuariosController;
