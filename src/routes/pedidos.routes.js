@@ -50,7 +50,7 @@ routerPedidos.put(
   verificarRol([ROL_ADMIN]), 
   validarPedidos,
   validarErrores,
-  PedidoController.actualizarPedido
+  PedidoController.ActualizarEstado
 );
 
 // =================================================================

@@ -33,7 +33,7 @@ class AuthController {
       };
 
       // Leemos la clave secreta desde las variables de entorno
-      const secret = process.env.JWT_SECRET;
+      const secret = process.env.JWT_SECRET || "6c8e47759d738ef97bb64b724e1c82d705ca39d2629f514ae1436da18bbf162e";
 
       const token = jwt.sign(
         payload,

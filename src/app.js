@@ -1,9 +1,9 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
 
 // ================ RUTAS =================
-
 import routerProducto from "./routes/productos.routes.js";
 import routerUsuario from "./routes/usuarios.routes.js";
 import routerInventario from "./routes/inventario.routes.js";
@@ -12,7 +12,6 @@ import routerDocumento from "./routes/documentos.routes.js";
 import routerAuth from "./routes/login.js";
 
 // ================= CONFIGURACIONES =================
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
