@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import helmet from "helmet";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+
 dotenv.config();
 
 // ================ RUTAS =================
@@ -17,13 +21,25 @@ const PORT = process.env.PORT || 8080;
 
 // ================= MIDDLEWARES =================
 
-// CORS configurado de forma segura
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: process.env.FRONTEND_URL || "http://localhost:4200",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
 };
+
+app.use(helmet()); // Seguridad HTTP headers
+app.use(compression()); // Comprimir respuestas para optimizar ancho de banda
+
+// Limitar peticiones (prevenir DDoS y fuerza bruta)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // Límite de 100 peticiones por IP en el windowMs
+  standardHeaders: true, // Devolver la info del límite en headers RateLimit-*
+  legacyHeaders: false, // Deshabilitar encabezados X-RateLimit-*
+  message: { error: "Demasiadas peticiones desde esta IP, por favor intenta de nuevo más tarde." }
+});
+app.use(limiter);
 
 app.use(cors(corsOptions));
 
@@ -39,51 +55,6 @@ app.use(
   routerDocumento,
   routerAuth
 );
-
-// ================= MANEJO DE ERRORES GLOBAL =================
-
-// Middleware para rutas no encontradas (404)
-app.use((req, res) => {
-  res.status(404).json({
-    error: "Ruta no encontrada",
-    path: req.path,
-    method: req.method,
-  });
-});
-
-// Middleware de manejo de errores global
-app.use((err, req, res, next) => {
-  console.error("Error global:", err);
-
-  // Si ya se envió una respuesta, pasar al siguiente manejador
-  if (res.headersSent) {
-    return next(err);
-  }
-
-  // Errores específicos de Multer
-  if (err.name === "MulterError") {
-    if (err.code === "FILE_TOO_LARGE") {
-      return res.status(413).json({
-        error: "El archivo es demasiado grande. Máximo 5MB.",
-      });
-    }
-    return res.status(400).json({
-      error: "Error al procesar el archivo.",
-    });
-  }
-
-  // Errores de validación u otros
-  const statusCode = err.statusCode || 500;
-  const message =
-    process.env.NODE_ENV === "development"
-      ? err.message
-      : "Error interno del servidor";
-
-  res.status(statusCode).json({
-    error: message,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
-  });
-});
 
 // ================= SERVIDOR =================
 

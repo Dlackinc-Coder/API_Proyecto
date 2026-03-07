@@ -7,15 +7,24 @@ class DocumentoController {
     try {
       // 1. Verificar si Multer subió un archivo
       if (req.file) {
-        // 2. Convertir el buffer del archivo (Multer) a Data URI (Cloudinary)
-        const b64 = Buffer.from(req.file.buffer).toString("base64");
-        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-        // 3. Subir el archivo a Cloudinary
-        const result = await cloudinary.uploader.upload(dataURI, {
-          folder: "documentos_empleados", // Carpeta específica en Cloudinary
-          resource_type: "auto", // Importante para documentos (PDF, DOCX, etc.)
-        });
+        // 2 & 3. Subir el archivo a Cloudinary usando upload_stream para optimizar memoria (evita OOM)
+        const uploadStream = () => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: "documentos_empleados",
+                resource_type: "auto",
+              },
+              (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+              }
+            );
+            stream.end(req.file.buffer);
+          });
+        };
 
+        const result = await uploadStream();
         url_documento = result.secure_url; // 4. Obtener la URL generada
       } else {
         res
@@ -71,15 +80,24 @@ class DocumentoController {
 
       // 2. Lógica para el archivo (si se subió uno nuevo)
       if (req.file) {
-        // Subir nuevo archivo a Cloudinary (misma lógica que en crearDocumento)
-        const b64 = Buffer.from(req.file.buffer).toString("base64");
-        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        // Subir nuevo archivo a Cloudinary usando upload_stream
+        const uploadStream = () => {
+          return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: "documentos_empleados",
+                resource_type: "auto",
+              },
+              (error, result) => {
+                if (result) resolve(result);
+                else reject(error);
+              }
+            );
+            stream.end(req.file.buffer);
+          });
+        };
 
-        const result = await cloudinary.uploader.upload(dataURI, {
-          folder: "documentos_empleados",
-          resource_type: "auto",
-        });
-
+        const result = await uploadStream();
         url_documento_nueva = result.secure_url;
         // Opcional: Eliminar el archivo antiguo de Cloudinary aquí si lo necesitas.
       }

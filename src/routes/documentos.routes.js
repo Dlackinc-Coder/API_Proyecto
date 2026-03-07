@@ -17,7 +17,6 @@ routerDocumento.post(
   DocumentoController.crearDocumento
 );
 
-// Ruta protegida: Solo administradores pueden ver documentos próximos a vencer
 routerDocumento.get(
   "/api/documentos/vencer",
   verificarToken,
