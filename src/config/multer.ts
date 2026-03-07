@@ -18,7 +18,7 @@ const imageUpload = multer({
       cb(
         new Error(
           "Tipo de archivo no permitido. Solo imágenes (PNG, JPG, GIF)."
-        ),
+        ) as any,
         false
       );
     }
@@ -46,7 +46,7 @@ const documentUpload = multer({
       cb(null, true);
     } else {
       cb(
-        new Error("Tipo de archivo no permitido. Solo PDF, DOC o DOCX."),
+        new Error("Tipo de archivo no permitido. Solo PDF, DOC o DOCX.") as any,
         false
       );
     }

@@ -9,30 +9,21 @@ const routerInventario = express.Router();
 const ROL_ADMIN = 1;
 
 routerInventario.post(
-  "/api/inventario",
+  "/api/inventario/movimiento",
   verificarToken,
   verificarRol([ROL_ADMIN]),
   validarInventario,
   validarErrores,
-  InventarioController.crearInventario
+  InventarioController.registrarMovimiento
 );
 
 routerInventario.get(
-  "/api/inventario",
+  "/api/inventario/:id/kardex",
   verificarToken,
   verificarRol([ROL_ADMIN]),
   validacionLimit_Offset,
   validarErrores,
-  InventarioController.obtenerInventario
-);
-
-routerInventario.put(
-  "/api/inventario/:id",
-  verificarToken,
-  verificarRol([ROL_ADMIN]),
-  validarInventario,
-  validarErrores,
-  InventarioController.actualizarStock
+  InventarioController.obtenerKardexProducto
 );
 
 export default routerInventario;

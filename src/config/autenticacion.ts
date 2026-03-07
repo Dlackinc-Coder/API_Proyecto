@@ -1,7 +1,12 @@
 import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+
+interface AuthRequest extends Request {
+  usuario?: any;
+}
 
 // Middleware que verifica el JWT y adjunta los datos del usuario a req.usuario
-export const verificarToken = (req, res, next) => {
+export const verificarToken = (req: AuthRequest, res: Response, next: NextFunction) => {
   // 1. Obtener el encabezado de autorización
   const authHeader = req.headers["authorization"];
 
@@ -46,8 +51,8 @@ export const verificarToken = (req, res, next) => {
 };
 
 // Middleware para verificar el rol (Autorización)
-export const verificarRol = (rolesPermitidos) => {
-  return (req, res, next) => {
+export const verificarRol = (rolesPermitidos: number[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
     // Asume que 'verificarToken' ya se ejecutó y adjuntó el usuario
     if (!req.usuario) {
       return res.status(403).json({
@@ -59,7 +64,7 @@ export const verificarRol = (rolesPermitidos) => {
 
     // Comprueba si el id_rol del usuario está en la lista de roles permitidos
     if (rolesPermitidos.includes(userRole)) {
-      next(); 
+      next();
     } else {
       return res.status(403).json({
         error:
