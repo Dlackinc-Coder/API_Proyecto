@@ -69,6 +69,7 @@ class AuthController {
       // 4. GENERAR EL TOKEN JWT
       const payload = {
         id_usuario: usuario.id_usuario,
+        id_rol: usuario.id_rol,
         nombre_rol: usuario.nombre_rol,
         email: usuario.email,
       };

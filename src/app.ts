@@ -22,26 +22,25 @@ const PORT = process.env.PORT || 8080;
 // ================= MIDDLEWARES =================
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:4200",
+  origin: "*",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
 };
 
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(compression());
 
 // Limitar peticiones (prevenir DDoS y fuerza bruta)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Demasiadas peticiones desde esta IP, por favor intenta de nuevo más tarde." }
 });
 app.use(limiter);
-
-app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

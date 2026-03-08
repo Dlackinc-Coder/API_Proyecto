@@ -28,9 +28,9 @@ class Usuarios {
     }
   }
 
-  static async ObtenerTodosLosUsuarios(): Promise<(Usuario & { nombre_rol: string })[]> {
+  static async ObtenerTodosLosUsuarios(): Promise<(Usuario & { nombre_rol: string, id_rol: number })[]> {
     const result = await pool.query(
-      `SELECT u.*, r.nombre_rol
+      `SELECT u.*, r.nombre_rol, ur.id_rol
        FROM usuarios u
        LEFT JOIN usuarios_roles ur ON u.id_usuario = ur.id_usuario
        LEFT JOIN roles r ON ur.id_rol = r.id_rol
@@ -39,9 +39,9 @@ class Usuarios {
     return result.rows;
   }
 
-  static async ObtenerUsuarioPorId(id_usuario: number): Promise<(Usuario & { nombre_rol: string }) | undefined> {
+  static async ObtenerUsuarioPorId(id_usuario: number): Promise<(Usuario & { nombre_rol: string, id_rol: number }) | undefined> {
     const result = await pool.query(
-      `SELECT u.*, r.nombre_rol
+      `SELECT u.*, r.nombre_rol, ur.id_rol
        FROM usuarios u
        LEFT JOIN usuarios_roles ur ON u.id_usuario = ur.id_usuario
        LEFT JOIN roles r ON ur.id_rol = r.id_rol
@@ -51,9 +51,9 @@ class Usuarios {
     return result.rows[0];
   }
 
-  static async ObtenerUsuarioPorEmail(email: string): Promise<(Usuario & { nombre_rol: string }) | undefined> {
+  static async ObtenerUsuarioPorEmail(email: string): Promise<(Usuario & { nombre_rol: string, id_rol: number }) | undefined> {
     const result = await pool.query(
-      `SELECT u.*, r.nombre_rol
+      `SELECT u.*, r.nombre_rol, ur.id_rol
        FROM usuarios u
        LEFT JOIN usuarios_roles ur ON u.id_usuario = ur.id_usuario
        LEFT JOIN roles r ON ur.id_rol = r.id_rol
