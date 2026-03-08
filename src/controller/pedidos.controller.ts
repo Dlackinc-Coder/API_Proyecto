@@ -36,17 +36,16 @@ class PedidosController {
             id_pedido: id_pedido,
             id_producto: parseInt(prod.id_producto, 10),
             cantidad: parseInt(prod.cantidad, 10),
-            precio_unitario: parseFloat(prod.precio_unitario),
+            precio_unitario_venta: parseFloat(prod.precio_unitario),
           });
           detallesGuardados.push(detalle);
 
-          // Restar stock a través del Kardex
           await Inventario.RegistrarMovimiento(
             parseInt(prod.id_producto, 10),
-            -parseInt(prod.cantidad, 10), // negativo porque es salida
+            -parseInt(prod.cantidad, 10),
             MovementType.VENTA_CLIENTE,
             `Pedido ${folio}`,
-            null, // Se podría obtener de req.usuario si el admin hace el pedido en POS
+            null,
             client
           );
         }

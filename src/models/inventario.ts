@@ -2,29 +2,23 @@ import pool from "../config/db.js";
 import { InventarioKardex, MovementType } from "../interfaces/database.types.js";
 
 class Inventario {
-  /**
-   * Registra un movimiento de inventario en el Kardex. 
-   * La tabla tiene un trigger que actualizará automaticamente la tabla productos.stock_actual
-   */
   static async RegistrarMovimiento(
     id_producto: number,
     cantidad_movimiento: number,
     tipo_movimiento: MovementType,
     referencia_documento: string | null,
     id_usuario_responsable: number | null,
-    clientCon: any = null // Para inyectar una transacción de PG si es necesario
+    clientCon: any = null
   ): Promise<InventarioKardex> {
 
-    // Obtenemos el stock anterior desde producto para guardar el registro (aunque el trigger también lo validará)
     const runQuery = async (client: any) => {
-      // Tomar lock del producto
       const prodResult = await client.query("SELECT stock_actual FROM productos WHERE id_producto = $1 FOR UPDATE", [id_producto]);
       if (prodResult.rows.length === 0) {
         throw new Error("Producto no encontrado");
       }
 
       const stock_anterior = prodResult.rows[0].stock_actual;
-      const stock_resultante = stock_anterior + cantidad_movimiento; // asumiendo positivo para entrada, negativo para salida
+      const stock_resultante = stock_anterior + cantidad_movimiento;
 
       const result = await client.query(
         `INSERT INTO inventario_kardex 

@@ -1,3 +1,6 @@
+import { PoolClient } from "pg";
+export type DBClient = PoolClient;
+
 // ====================== ENUMS ======================
 
 export enum GrainType {
@@ -70,9 +73,13 @@ export interface Rol {
 
 export interface Usuario {
     id_usuario: number;
+    /** Máximo 80 caracteres (VARCHAR(80)) */
     email: string;
+    /** Hash bcrypt - CHAR(60) */
     password_hash: string;
+    /** Máximo 100 caracteres (VARCHAR(100)) */
     nombre: string;
+    /** Máximo 15 caracteres (VARCHAR(15)) */
     telefono: string | null;
     email_verificado: boolean;
     token_verificacion: string | null;
@@ -133,7 +140,7 @@ export interface Producto {
     tipo_grano: GrainType;
     nivel_tostado: RoastLevel;
     notas_cata_texto: string | null;
-    precio_actual: number; // Decimal mapped to number in JS
+    precio_actual: number;
     stock_actual: number;
     stock_minimo: number;
     estado: ProductStatus;

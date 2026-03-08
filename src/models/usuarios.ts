@@ -67,11 +67,17 @@ class Usuarios {
     id_usuario: number,
     nombre: string,
     email: string,
-    contrasena: string,
+    contrasena: string | null,
     telefono: string | null
   ): Promise<Usuario> {
     const result = await pool.query(
-      "UPDATE usuarios SET nombre = $1, email = $2, password_hash = $3, telefono = $4 WHERE id_usuario = $5 RETURNING *",
+      `UPDATE usuarios 
+       SET nombre = $1, 
+           email = $2, 
+           password_hash = COALESCE($3, password_hash),
+           telefono = $4 
+       WHERE id_usuario = $5 
+       RETURNING *`,
       [nombre, email, contrasena, telefono, id_usuario]
     );
     return result.rows[0];

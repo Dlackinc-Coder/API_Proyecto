@@ -16,6 +16,17 @@ class ProductoController {
     } = req.body;
 
     try {
+      const granosValidos: GrainType[] = [GrainType.ARABICA, GrainType.ROBUSTA, GrainType.MEZCLADA];
+      const tostadosValidos: RoastLevel[] = [RoastLevel.LIGERO, RoastLevel.MEDIO, RoastLevel.MEDIO_OSCURO, RoastLevel.OSCURO];
+
+      if (!granosValidos.includes(tipo_grano as GrainType)) {
+        return res.status(400).json({ error: "Tipo de grano inválido. Valores permitidos: arabica, robusta, mezclada" });
+      }
+
+      if (!tostadosValidos.includes(nivel_tostado as RoastLevel)) {
+        return res.status(400).json({ error: "Nivel de tostado inválido. Valores permitidos: ligero, medio, medio_oscuro, oscuro" });
+      }
+
       const nuevoProducto = await Productos.CrearProducto(
         sku,
         nombre,

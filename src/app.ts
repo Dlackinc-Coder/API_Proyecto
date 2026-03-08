@@ -28,15 +28,15 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
 };
 
-app.use(helmet()); // Seguridad HTTP headers
-app.use(compression()); // Comprimir respuestas para optimizar ancho de banda
+app.use(helmet());
+app.use(compression());
 
 // Limitar peticiones (prevenir DDoS y fuerza bruta)
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Límite de 100 peticiones por IP en el windowMs
-  standardHeaders: true, // Devolver la info del límite en headers RateLimit-*
-  legacyHeaders: false, // Deshabilitar encabezados X-RateLimit-*
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: "Demasiadas peticiones desde esta IP, por favor intenta de nuevo más tarde." }
 });
 app.use(limiter);

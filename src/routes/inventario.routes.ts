@@ -1,7 +1,7 @@
 import InventarioController from "../controller/inventario.controller.js";
 import express from "express";
 import validacionLimit_Offset from "../config/validacionLimit-Offset.js";
-import validarInventario from "../config/validacionInventario.js";
+import validarMovimientoInventario from "../config/validacionInventario.js";
 import validarErrores from "../config/validarErrores.js";
 import { verificarToken, verificarRol } from "../config/autenticacion.js";
 
@@ -12,7 +12,7 @@ routerInventario.post(
   "/api/inventario/movimiento",
   verificarToken,
   verificarRol([ROL_ADMIN]),
-  validarInventario,
+  validarMovimientoInventario,
   validarErrores,
   InventarioController.registrarMovimiento
 );

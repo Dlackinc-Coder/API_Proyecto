@@ -8,16 +8,16 @@ export const validarPedidos = [
   body("estado")
     .notEmpty()
     .withMessage("El estado del pedido es obligatorio")
-    .isIn(["pendiente", "procesando", "completado", "cancelado"])
+    .isIn(["pagado", "preparado", "enviada", "entregada", "cancelada"])
     .withMessage(
-      "El estado del pedido debe ser uno de los siguientes: pendiente, procesando, completado, cancelado"
+      "El estado del pedido debe ser: pagado, preparado, enviada, entregada o cancelada"
     ),
   body("metodo_pago")
     .notEmpty()
     .withMessage("El método de pago es obligatorio")
-    .isIn(["tarjeta", "paypal", "efectivo"])
+    .isIn(["paypal", "mercadopago", "efectivo"])
     .withMessage(
-      "El método de pago debe ser uno de los siguientes: tarjeta, paypal, efectivo"
+      "El método de pago debe ser: paypal, mercadopago o efectivo"
     ),
   body("total")
     .notEmpty()

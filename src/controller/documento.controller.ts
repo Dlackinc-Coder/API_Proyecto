@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import Documentos from "../models/documentos.js";
 import cloudinary from "../config/cloudinary.js";
 import { DocType, ValidationStatus } from "../interfaces/database.types.js";
-
-// Extender Request para el usuario logueado en validación
 interface AuthRequest extends Request {
   usuario?: { id_usuario: number; id_rol: number };
   file?: any;

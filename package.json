@@ -4,7 +4,7 @@
   "description": "API generada para el proyecto integrador de 4º cuatrimestres",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/app.ts",
+    "dev": "tsx src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -37,6 +37,7 @@
     "@types/node": "^25.3.5",
     "@types/pg": "^8.18.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

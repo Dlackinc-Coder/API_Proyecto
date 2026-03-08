@@ -6,7 +6,7 @@ class Documentos {
     id_empleado: number;
     tipo_documento: DocType;
     cloudinary_url: string;
-    cloudinary_public_id: string; // Nuevo campo requerido por el esquema
+    cloudinary_public_id: string;
     fecha_expiracion?: string | null;
   }): Promise<DocumentoEmpleado> {
     const {

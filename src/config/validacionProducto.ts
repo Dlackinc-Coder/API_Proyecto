@@ -1,39 +1,50 @@
 import { body } from "express-validator";
 export const validarProducto = [
+  body("sku")
+    .notEmpty()
+    .withMessage("El SKU es obligatorio")
+    .isLength({ max: 50 })
+    .withMessage("El SKU no debe exceder 50 caracteres"),
+
   body("nombre")
     .notEmpty()
     .withMessage("El nombre del producto es obligatorio")
     .isLength({ max: 100 })
-    .withMessage("El nombre del producto no debe exceder los 100 caracteres"),
+    .withMessage("El nombre no debe exceder 100 caracteres"),
 
-  body("tipo")
+  body("id_region")
     .notEmpty()
-    .withMessage("El tipo de producto es obligatorio")
-    .isLength({ max: 50 })
-    .withMessage("El tipo de producto no debe exceder los 50 caracteres"),
+    .withMessage("La región del café es obligatoria")
+    .isInt({ gt: 0 })
+    .withMessage("ID de región inválido"),
 
-  body("variedad")
+  body("tipo_grano")
     .notEmpty()
-    .withMessage("La variedad del producto es obligatoria")
-    .isLength({ max: 50 })
-    .withMessage("La variedad del producto no debe exceder los 50 caracteres"),
+    .withMessage("El tipo de grano es obligatorio")
+    .isIn(["arabica", "robusta", "mezclada"])
+    .withMessage("Tipo de grano inválido"),
 
-  body("precio")
+  body("nivel_tostado")
     .notEmpty()
-    .withMessage("El precio del producto es obligatorio")
+    .withMessage("El nivel de tostado es obligatorio")
+    .isIn(["ligero", "medio", "medio_oscuro", "oscuro"])
+    .withMessage("Nivel de tostado inválido"),
+
+  body("notas_cata_texto")
+    .optional()
+    .isString()
+    .withMessage("Las notas de cata deben ser texto"),
+
+  body("precio_actual")
+    .notEmpty()
+    .withMessage("El precio es obligatorio")
     .isFloat({ gt: 0 })
-    .withMessage("El precio del producto debe ser un número mayor que 0"),
+    .withMessage("El precio debe ser mayor a 0"),
 
-  body("descripcion")
+  body("stock_minimo")
     .optional()
-    .isLength({ max: 500 })
-    .withMessage(
-      "La descripción del producto no debe exceder los 500 caracteres"
-    ),
-  body("imagen_url")
-    .optional()
-    .isURL()
-    .withMessage("La URL de la imagen del producto no es válida"),
+    .isInt({ min: 0 })
+    .withMessage("El stock mínimo debe ser un número entero positivo"),
 ];
 
 export default validarProducto;

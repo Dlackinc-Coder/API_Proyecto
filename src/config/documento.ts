@@ -5,12 +5,14 @@ export const validarDocumento = [
     .notEmpty()
     .withMessage("El tipo de documento es obligatorio")
     .isIn([
-      "INE",
-      "Constancia_Fiscal",
-      "Alta_IMSS",
-      "Baja_IMSS",
-      "Vigencia_Derechos",
-      "Otro",
+      "ine_frente",
+      "ine_reverso",
+      "rfc",
+      "curp",
+      "acta_nacimiento",
+      "comprobante_domicilio",
+      "alta_imss",
+      "contrato"
     ])
     .withMessage("Tipo de documento inválido"),
 
