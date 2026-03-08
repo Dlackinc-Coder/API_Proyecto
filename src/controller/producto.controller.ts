@@ -38,7 +38,10 @@ class ProductoController {
         parseInt(stock_minimo, 10) || 10
       );
       res.status(201).json(nuevoProducto);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === '23505') {
+        return res.status(409).json({ error: "El SKU ya existe" });
+      }
       console.error("Error al crear el producto:", error);
       res.status(500).json({ error: "Error al crear el producto." });
     }

@@ -12,7 +12,7 @@ interface AuthRequest extends Request {
 
 class PedidosController {
   static async crearPedido(req: Request, res: Response) {
-    const { folio, id_cliente, total, productos } = req.body;
+    const { folio, id_cliente, total, productos, metodo_pago } = req.body;
 
     const client = await pool.connect();
     let nuevoPedido = null;
@@ -49,6 +49,14 @@ class PedidosController {
             client
           );
         }
+      }
+
+      if (metodo_pago) {
+        await client.query(
+          `INSERT INTO transacciones_pago (id_pedido, proveedor, proveedor_order_id, monto)
+           VALUES ($1, $2, $3, $4)`,
+          [id_pedido, metodo_pago, folio, total]
+        );
       }
 
       await client.query("COMMIT");

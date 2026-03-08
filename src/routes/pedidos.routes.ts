@@ -1,6 +1,6 @@
 import { Router } from "express";
 import PedidoController from "../controller/pedidos.controller.js";
-import validarPedidos from "../config/validacionPedidos.js";
+import validarPedidos, { validarActualizarEstadoPedido, validarCrearPedido } from "../config/validacionPedidos.js";
 import validarErrores from "../config/validarErrores.js";
 import validacionLimitOffset from "../config/validacionLimit-Offset.js";
 import { verificarToken, verificarRol } from "../config/autenticacion.js";
@@ -15,7 +15,7 @@ const ROL_CLIENTE = 3;
 routerPedidos.post(
   "/api/pedidos",
   verificarToken,
-  validarPedidos,
+  validarCrearPedido,
   validarErrores,
   PedidoController.crearPedido
 );
@@ -47,8 +47,8 @@ routerPedidos.get(
 routerPedidos.put(
   "/api/pedidos/:id",
   verificarToken,
-  verificarRol([ROL_ADMIN]), 
-  validarPedidos,
+  verificarRol([ROL_ADMIN]),
+  validarActualizarEstadoPedido,
   validarErrores,
   PedidoController.ActualizarEstado
 );
