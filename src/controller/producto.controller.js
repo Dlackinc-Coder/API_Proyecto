@@ -1,4 +1,19 @@
 import Productos from "../models/productos.js";
+import cloudinary from "../config/cloudinary.js";
+
+const uploadToCloudinary = (fileBuffer, folder = "productos") => {
+    return new Promise((resolve, reject) => {
+        const fileBase64 = `data:image/jpeg;base64,${fileBuffer.toString('base64')}`;
+        cloudinary.uploader.upload(
+            fileBase64,
+            { folder: folder, timeout: 120000 },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+    });
+};
 const GrainType = {
     ARABICA: "arabica",
     ROBUSTA: "robusta",
@@ -22,7 +37,28 @@ class ProductoController {
             if (!tostadosValidos.includes(nivel_tostado)) {
                 return res.status(400).json({ error: "Nivel de tostado inválido. Valores permitidos: ligero, medio, medio_oscuro, oscuro" });
             }
-            const nuevoProducto = await Productos.CrearProducto(sku, nombre, parseInt(id_region, 10), tipo_grano, nivel_tostado, notas_cata_texto, parseFloat(precio_actual), parseInt(stock_minimo, 10) || 10);
+
+            let cloudinary_url = null;
+            let cloudinary_public_id = null;
+
+            if (req.file) {
+                const result = await uploadToCloudinary(req.file.buffer);
+                cloudinary_url = result.secure_url;
+                cloudinary_public_id = result.public_id;
+            }
+
+            const nuevoProducto = await Productos.CrearProducto(
+                sku,
+                nombre,
+                parseInt(id_region, 10),
+                tipo_grano,
+                nivel_tostado,
+                notas_cata_texto,
+                parseFloat(precio_actual),
+                parseInt(stock_minimo, 10) || 10,
+                cloudinary_url,
+                cloudinary_public_id
+            );
             res.status(201).json(nuevoProducto);
         }
         catch (error) {
@@ -35,7 +71,7 @@ class ProductoController {
     }
     static async obtenerProductos(req, res) {
         try {
-            const limite = parseInt(req.query.limite) || 10;
+            const limite = parseInt(req.query.limite) || 100;
             const offset = parseInt(req.query.offset) || 0;
             const productos = await Productos.ObtenerProductos(limite, offset);
             res.status(200).json(productos);
@@ -65,7 +101,37 @@ class ProductoController {
         const id_producto = parseInt(req.params.id, 10);
         const { sku, nombre, id_region, tipo_grano, nivel_tostado, notas_cata_texto, precio_actual, stock_minimo } = req.body;
         try {
-            const productoActualizado = await Productos.ActualizarProducto(id_producto, sku, nombre, parseInt(id_region, 10), tipo_grano, nivel_tostado, notas_cata_texto, parseFloat(precio_actual), parseInt(stock_minimo, 10));
+            const productoExistente = await Productos.ObtenerProductoPorId(id_producto);
+            if (!productoExistente) {
+                return res.status(404).json({ error: "Producto no encontrado" });
+            }
+
+            let cloudinary_url = productoExistente.cloudinary_url;
+            let cloudinary_public_id = productoExistente.cloudinary_public_id;
+
+            if (req.file) {
+                // Si hay una imagen previa, la eliminamos de Cloudinary
+                if (cloudinary_public_id) {
+                    await cloudinary.uploader.destroy(cloudinary_public_id);
+                }
+                const result = await uploadToCloudinary(req.file.buffer);
+                cloudinary_url = result.secure_url;
+                cloudinary_public_id = result.public_id;
+            }
+
+            const productoActualizado = await Productos.ActualizarProducto(
+                id_producto,
+                sku,
+                nombre,
+                parseInt(id_region, 10),
+                tipo_grano,
+                nivel_tostado,
+                notas_cata_texto,
+                parseFloat(precio_actual),
+                parseInt(stock_minimo, 10),
+                cloudinary_url,
+                cloudinary_public_id
+            );
             if (productoActualizado) {
                 res.status(200).json(productoActualizado);
             }
@@ -92,6 +158,16 @@ class ProductoController {
         catch (error) {
             console.error("Error al eliminar producto:", error);
             res.status(500).json({ error: "Error al eliminar el producto" });
+        }
+    }
+    static async obtenerSiguienteSKU(req, res) {
+        try {
+            const sku = await Productos.SiguienteSKU();
+            res.status(200).json({ sku });
+        }
+        catch (error) {
+            console.error("Error al obtener siguiente SKU:", error);
+            res.status(500).json({ error: "Error al generar el SKU sugerido" });
         }
     }
 }

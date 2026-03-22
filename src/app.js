@@ -12,6 +12,7 @@ import routerInventario from "./routes/inventario.routes.js";
 import routerPedidos from "./routes/pedidos.routes.js";
 import routerDocumento from "./routes/documentos.routes.js";
 import routerAuth from "./routes/login.js";
+import routerReportes from "./routes/reportes.routes.js";
 // ================= CONFIGURACIONES =================
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -37,7 +38,7 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // ================= RUTAS =================
-app.use(routerProducto, routerUsuario, routerInventario, routerPedidos, routerDocumento, routerAuth);
+app.use(routerProducto, routerUsuario, routerInventario, routerPedidos, routerDocumento, routerAuth, routerReportes);
 // ================= SERVIDOR =================
 app.listen(PORT, () => {
     console.log(`API LEVANTADA EN EL PUERTO: ${PORT}`);

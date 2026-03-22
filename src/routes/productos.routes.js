@@ -8,6 +8,7 @@ import { verificarToken, verificarRol } from "../config/autenticacion.js";
 const routerProducto = Router();
 const ROL_ADMIN = 1;
 routerProducto.get("/api/productos", verificarToken, validacionLimitOffset, validarErrores, ProductoController.obtenerProductos);
+routerProducto.get("/api/productos/siguiente-sku", verificarToken, ProductoController.obtenerSiguienteSKU);
 routerProducto.get("/api/productos/:id", verificarToken, ProductoController.obtenerProductoPorId);
 routerProducto.post("/api/productos", verificarToken, verificarRol([ROL_ADMIN]), uploadImageMiddleware, validarProducto, validarErrores, ProductoController.crearProducto);
 routerProducto.put("/api/productos/:id", verificarToken, verificarRol([ROL_ADMIN]), uploadImageMiddleware, validarProducto, validarErrores, ProductoController.actualizarProducto);

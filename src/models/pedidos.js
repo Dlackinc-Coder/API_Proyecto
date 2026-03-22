@@ -5,8 +5,6 @@ class Pedidos {
         return result.rows[0];
     }
     static async ObtenerPedidos() {
-        // La eliminación lógica de pedidos (fecha_eliminacion) no existe en el nuevo esquema
-        // Filtramos o mapeamos usando el estado si es necesario, asumiremos que todos son válidos
         const result = await pool.query(`SELECT p.*, u.nombre AS nombre_cliente 
        FROM pedidos p 
        JOIN clientes c ON p.id_cliente = c.id_cliente

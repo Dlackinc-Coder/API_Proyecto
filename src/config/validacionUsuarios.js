@@ -1,8 +1,7 @@
 import { body } from "express-validator";
 export const validarUsuario = [
     body("id_rol")
-        .notEmpty()
-        .withMessage("El ID del rol es obligatorio")
+        .optional()
         .isInt({ gt: 0 })
         .withMessage("El ID del rol debe ser válido"),
     body("nombre")

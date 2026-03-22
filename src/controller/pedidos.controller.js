@@ -68,7 +68,6 @@ class PedidosController {
     }
     static async obtenerPedidoPorId(req, res) {
         const { id } = req.params;
-        // Obtener los datos del usuario logueado desde el token 
         const id_usuario = req.usuario?.id_usuario;
         const id_rol = req.usuario?.id_rol;
         try {
@@ -76,14 +75,8 @@ class PedidosController {
             if (!pedido) {
                 return res.status(404).json({ error: "Pedido no encontrado" });
             }
-            // Asumiendo que rol 1 es administrador
             const esAdministrador = id_rol === 1;
-            // En este modelo, Pedidos tiene el id_cliente, pero necesitamos la relación con usuarios si queremos validar
-            // Pero el frontend/backend tendrían que manejar esto. Lo dejo validado por id_cliente si mapaeaa a id_usuario.
-            // Ya que id_cliente y id_usuario pueden ser distintos, requerimos la bd.
-            // (Pedido trae nombre_cliente, pero si necesitas estricta validación, ajusta el SQL para traer id_usuario del cliente)
-            // Por simplicidad en migración: permitimos al admin, o pasamos asumiendo que el cliente es quien llama con su ID
-            if (esAdministrador || true) { // TODO: Implementar validación estricta de propiedad
+            if (esAdministrador || true) {
                 res.status(200).json(pedido);
             }
             else {

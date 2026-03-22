@@ -1,5 +1,4 @@
 import multer from "multer";
-// Configuración de almacenamiento en memoria (buffer)
 const storage = multer.memoryStorage();
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB (Límite para ambos)
 // =================================================================

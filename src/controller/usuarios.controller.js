@@ -2,16 +2,15 @@ import Usuarios from "../models/usuarios.js";
 import bcrypt from "bcrypt";
 class UsuariosController {
     static async crearUsuario(req, res) {
-        const { id_rol, nombre, email, password, telefono } = req.body;
+        const id_rol = req.body.id_rol || 3;
+        const { nombre, email, password, telefono } = req.body;
         try {
-            // Verificar si el email ya existe
             const usuarioExistente = await Usuarios.ObtenerUsuarioPorEmail(email);
             if (usuarioExistente) {
                 return res.status(409).json({
                     error: "El email ya está registrado"
                 });
             }
-            // CIFRADO DE CONTRASEÑA
             const saltRounds = 10;
             const hashContrasena = await bcrypt.hash(password, saltRounds);
             const nuevoUsuario = await Usuarios.CrearUsuario(id_rol, nombre, email, hashContrasena, telefono);
