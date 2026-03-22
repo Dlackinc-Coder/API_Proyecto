@@ -2,11 +2,10 @@
   "name": "proyecto_integrador",
   "version": "1.0.0",
   "description": "API generada para el proyecto integrador de 4º cuatrimestres",
-  "main": "dist/app.js",
+  "main": "src/app.js",
   "scripts": {
-    "dev": "tsx src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js",
+    "dev": "node --watch src/app.js",
+    "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,18 +25,5 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
     "pg": "^8.16.3"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/compression": "^1.8.1",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.1.0",
-    "@types/node": "^25.3.5",
-    "@types/pg": "^8.18.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
   }
 }

@@ -1,0 +1,11 @@
+import InventarioController from "../controller/inventario.controller.js";
+import express from "express";
+import validacionLimit_Offset from "../config/validacionLimit-Offset.js";
+import validarMovimientoInventario from "../config/validacionInventario.js";
+import validarErrores from "../config/validarErrores.js";
+import { verificarToken, verificarRol } from "../config/autenticacion.js";
+const routerInventario = express.Router();
+const ROL_ADMIN = 1;
+routerInventario.post("/api/inventario/movimiento", verificarToken, verificarRol([ROL_ADMIN]), validarMovimientoInventario, validarErrores, InventarioController.registrarMovimiento);
+routerInventario.get("/api/inventario/:id/kardex", verificarToken, verificarRol([ROL_ADMIN]), validacionLimit_Offset, validarErrores, InventarioController.obtenerKardexProducto);
+export default routerInventario;
