@@ -31,11 +31,11 @@ export const validarUsuario = [
 // Validador específico para ACTUALIZACIÓN (donde password y email pueden ser opcionales)
 export const validarActualizarUsuario = [
     body("nombre")
-        .optional()
+        .optional({ checkFalsy: true })
         .isLength({ max: 100 })
         .withMessage("El nombre no debe exceder los 100 caracteres"),
     body("email")
-        .optional()
+        .optional({ checkFalsy: true })
         .isEmail()
         .withMessage("El email no es válido"),
     body("password")
@@ -43,7 +43,7 @@ export const validarActualizarUsuario = [
         .isLength({ min: 6, max: 72 })
         .withMessage("La contraseña debe tener entre 6 y 72 caracteres"),
     body("telefono")
-        .optional()
+        .optional({ checkFalsy: true })
         .isLength({ max: 15 })
         .withMessage("El teléfono no debe exceder 15 caracteres"),
 ];
