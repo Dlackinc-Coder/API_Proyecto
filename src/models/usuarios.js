@@ -44,10 +44,10 @@ class Usuarios {
     }
     static async ActualizarUsuario(id_usuario, nombre, email, contrasena, telefono) {
         const result = await pool.query(`UPDATE usuarios 
-       SET nombre = $1, 
-           email = $2, 
+       SET nombre = COALESCE($1, nombre), 
+           email = COALESCE($2, email), 
            password_hash = COALESCE($3, password_hash),
-           telefono = $4 
+           telefono = COALESCE($4, telefono) 
        WHERE id_usuario = $5 
        RETURNING *`, [nombre, email, contrasena, telefono, id_usuario]);
         return result.rows[0];

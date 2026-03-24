@@ -28,7 +28,6 @@ export const validarUsuario = [
         .withMessage("El teléfono no debe exceder 15 caracteres"),
 ];
 
-// Validador específico para ACTUALIZACIÓN (donde password y email pueden ser opcionales)
 export const validarActualizarUsuario = [
     body("nombre")
         .optional({ checkFalsy: true })

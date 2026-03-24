@@ -52,7 +52,11 @@ class UsuariosController {
     }
     static async actualizarUsuario(req, res) {
         const { id } = req.params;
-        const { nombre, email, password, telefono } = req.body;
+        const nombre = req.body.nombre || null;
+        const email = req.body.email || null;
+        const password = req.body.password || null;
+        const telefono = req.body.telefono || null;
+
         try {
             let hashContrasena = null;
             if (password) {
