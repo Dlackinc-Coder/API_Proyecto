@@ -17,8 +17,7 @@ export const validarUsuario = [
         .isLength({ max: 80 })
         .withMessage("El email no debe exceder 80 caracteres"),
     body("password")
-        .notEmpty()
-        .withMessage("La contraseña es obligatoria")
+        .optional()
         .isLength({ min: 6, max: 72 })
         .withMessage("La contraseña debe tener entre 6 y 72 caracteres"),
     body("telefono")
