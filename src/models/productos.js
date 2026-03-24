@@ -18,11 +18,11 @@ class Productos {
         return result.rows[0];
     }
     static async ObtenerProductos(limite, offset) {
-        const result = await pool.query("SELECT * FROM productos WHERE estado != 'descontinuado' ORDER BY id_producto LIMIT $1 OFFSET $2", [limite, offset]);
+        const result = await pool.query("SELECT * FROM productos WHERE estado != 'descontinuado' AND stock_actual > 0 ORDER BY id_producto LIMIT $1 OFFSET $2", [limite, offset]);
         return result.rows;
     }
     static async ObtenerProductoPorId(id_producto) {
-        const result = await pool.query("SELECT * FROM productos WHERE id_producto = $1 AND estado != 'descontinuado'", [id_producto]);
+        const result = await pool.query("SELECT * FROM productos WHERE id_producto = $1 AND estado != 'descontinuado' AND stock_actual > 0", [id_producto]);
         return result.rows[0];
     }
     static async ActualizarProducto(id_producto, sku, nombre, id_region, tipo_grano, nivel_tostado, notas_cata_texto, precio_actual, stock_minimo, cloudinary_url = null, cloudinary_public_id = null) {
